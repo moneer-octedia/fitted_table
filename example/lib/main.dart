@@ -41,6 +41,13 @@ class _PaginatedExpandableItemListExampleState
             side: BorderSide(color: Colors.green),
           )),
           child: FittedTable(
+            onTapDataRow: (user) {},
+            evenDataRowColor: Colors.brown.withOpacity(0.6),
+            oddDataRowColor: Colors.grey.withOpacity(0.6),
+            dataRowPadding: const EdgeInsets.all(24),
+            headerRowPadding: const EdgeInsets.symmetric(horizontal: 24,
+            vertical: 12),
+            headerRowColor: Colors.green,
             visibleNumberOfColumns: 3,
             future: (int pageKey, int pageSize) async {
               await Future.delayed(const Duration(milliseconds: 250));
@@ -50,10 +57,9 @@ class _PaginatedExpandableItemListExampleState
             columns: [
               FittedTableColumn(
                 width: 24,
-                title: Text('Number'),
+                title: Text('#'),
               ),
               FittedTableColumn(
-
                 title: Text('Motto'),
               ),
               FittedTableColumn(
@@ -61,44 +67,36 @@ class _PaginatedExpandableItemListExampleState
                 title: Text('Name'),
               ),
             ],
-            rowBuilder: (BuildContext context, user, int index) {
-              return FittedTableRow(
-                  onTap: (user) {
-
-                  },
-                  color: index % 2 == 0
-                      ? Colors.brown.withOpacity(0.6)
-                      : Colors.grey.withOpacity(0.6),
-                  padding: const EdgeInsets.all(24),
-                  cells: [
-                    FittedTableCell(
-                      content: ColoredBox(
-                        color: Colors.blueGrey,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('${user.number}'),
-                        ),
-                      ),
+            dataRowBuilder: (BuildContext context, user, int index) {
+              return FittedTableRow(cells: [
+                FittedTableCell(
+                  content: ColoredBox(
+                    color: Colors.blueGrey,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('${user.number}'),
                     ),
-                    FittedTableCell(
-                      content: ColoredBox(
-                        color: Colors.blueGrey,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('${user.motto}'),
-                        ),
-                      ),
+                  ),
+                ),
+                FittedTableCell(
+                  content: ColoredBox(
+                    color: Colors.blueGrey,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('${user.motto}'),
                     ),
-                    FittedTableCell(
-                      content: ColoredBox(
-                        color: Colors.blueGrey,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('${user.name}'),
-                        ),
-                      ),
-                    )
-                  ]);
+                  ),
+                ),
+                FittedTableCell(
+                  content: ColoredBox(
+                    color: Colors.blueGrey,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('${user.name}'),
+                    ),
+                  ),
+                )
+              ]);
             },
           ),
         ),
