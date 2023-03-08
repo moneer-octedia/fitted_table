@@ -45,8 +45,8 @@ class _PaginatedExpandableItemListExampleState
             evenDataRowColor: Colors.brown.withOpacity(0.6),
             oddDataRowColor: Colors.grey.withOpacity(0.6),
             dataRowPadding: const EdgeInsets.all(24),
-            headerRowPadding: const EdgeInsets.symmetric(horizontal: 24,
-            vertical: 12),
+            headerRowPadding:
+                const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             headerRowColor: Colors.green,
             visibleNumberOfColumns: 3,
             future: (int pageKey, int pageSize) async {
@@ -55,6 +55,7 @@ class _PaginatedExpandableItemListExampleState
                   pageSize, (index) => UserRecord(pageKey + index));
             },
             columns: [
+              ExpandFittedTableColumn(width: 24),
               FittedTableColumn(
                 width: 24,
                 title: Text('#'),
@@ -69,6 +70,11 @@ class _PaginatedExpandableItemListExampleState
             ],
             dataRowBuilder: (BuildContext context, user, int index) {
               return FittedTableRow(cells: [
+                ExpandFittedTableCell(
+                  icon: ColoredBox(
+                      color: Colors.blueGrey,
+                      child: Icon(Icons.add_circle_outline)),
+                ),
                 FittedTableCell(
                   content: ColoredBox(
                     color: Colors.blueGrey,
