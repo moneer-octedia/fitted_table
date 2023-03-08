@@ -10,15 +10,17 @@ class FittedTable<T> extends StatefulWidget {
     Key? key,
     required this.future,
     required this.rowBuilder,
-    required this.visibleColumnCounter,
+    required this.visibleNumberOfColumns,
     required this.columns,
+    this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
   }) : super(key: key);
 
   final Future<List<T>> Function(int pageKey, int pageSize) future;
   final FittedTableRow<T> Function(BuildContext context, T value, int index)
       rowBuilder;
-  final int visibleColumnCounter;
+  final int visibleNumberOfColumns;
   final List<FittedTableColumn> columns;
+  final MainAxisAlignment mainAxisAlignment;
 
   @override
   State<FittedTable<T>> createState() => _FittedTableState<T>();
@@ -57,62 +59,47 @@ class _FittedTableState<T> extends State<FittedTable<T>> {
     }
   }
 
-  bool hasAtLestOneExcessWidthPercentageSet() {
-    for (var column in widget.columns) {
-      if (column.excessWidthPercentage != null) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   Widget buildRow(FittedTableRow<T> fittedTableRow, T value) {
-    final useExpandedOnAllCells = !hasAtLestOneExcessWidthPercentageSet();
+    Widget row = LayoutBuilder(builder: (context, constraints) {
+      int evenColumnNumber = widget.visibleNumberOfColumns;
+      double totalSpecifiedWidth = 0.0;
 
-    Widget row;
-    if (useExpandedOnAllCells) {
-      row = Row(
-        children: [
-          for (FittedTableCell cell in fittedTableRow.cells)
-            Expanded(child: cell.content)
-        ],
-      );
-    } else {
-      List<Widget> buildCells(BoxConstraints constraints) {
-        final maxWidth = constraints.maxWidth;
-        final decimalIndividualCellWidth =
-            maxWidth / widget.visibleColumnCounter;
-        final reminder = decimalIndividualCellWidth % 1;
-        final totalReminderWidth = reminder * widget.visibleColumnCounter;
-        final individualCellWidth = decimalIndividualCellWidth - reminder;
+      assert(widget.columns.length == fittedTableRow.cells.length);
 
-        assert(totalReminderWidth != 0);
-        List<Widget> cells = [];
-        for (var i = 0; i < widget.columns.length; i += 1) {
-          final percentOfRemainderWidth =
-              widget.columns[i].excessWidthPercentage;
-
-          cells.add(
-            SizedBox(
-              width: percentOfRemainderWidth == null
-                  ? individualCellWidth
-                  : individualCellWidth +
-                      (percentOfRemainderWidth * totalReminderWidth),
-              child: fittedTableRow.cells[i].content,
-            ),
-          );
+      for (var i = 0; i < widget.columns.length; i += 1) {
+        final columnWidth = widget.columns[i].width;
+        if (columnWidth != null) {
+          evenColumnNumber -= 1;
+          totalSpecifiedWidth += columnWidth;
         }
-        return cells;
       }
 
-      row = LayoutBuilder(
-        builder: (context, constraints) {
-          return Row(
-            children: buildCells(constraints),
-          );
-        },
-      );
-    }
+      List<Widget> children = [];
+
+      double? evenColumnWidth;
+
+      if (evenColumnNumber != 0) {
+        evenColumnWidth = constraints.maxWidth / evenColumnNumber;
+
+        evenColumnWidth -= totalSpecifiedWidth / evenColumnNumber;
+      }
+
+      for (var i = 0; i < widget.columns.length; i += 1) {
+        final fittedTableCellContent = fittedTableRow.cells[i].content;
+        final column = widget.columns[i];
+        assert(column.width != null || evenColumnWidth != null);
+        children.add(
+          SizedBox(
+            width: column.width ?? evenColumnWidth,
+            child: Align(
+                alignment: column.alignment, child: fittedTableCellContent),
+          ),
+        );
+      }
+
+      return Row(
+          mainAxisAlignment: widget.mainAxisAlignment, children: children);
+    });
 
     if (fittedTableRow.padding != null) {
       row = Padding(padding: fittedTableRow.padding!, child: row);

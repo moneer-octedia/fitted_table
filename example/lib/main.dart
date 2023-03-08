@@ -41,7 +41,7 @@ class _PaginatedExpandableItemListExampleState
             side: BorderSide(color: Colors.green),
           )),
           child: FittedTable(
-            visibleColumnCounter: 5,
+            visibleNumberOfColumns: 3,
             future: (int pageKey, int pageSize) async {
               await Future.delayed(const Duration(milliseconds: 250));
               return List.generate(
@@ -49,13 +49,15 @@ class _PaginatedExpandableItemListExampleState
             },
             columns: [
               FittedTableColumn(
-                excessWidthPercentage: 0.25,
+                width: 24,
                 title: Text('Number'),
               ),
               FittedTableColumn(
+
                 title: Text('Motto'),
               ),
               FittedTableColumn(
+                width: 100,
                 title: Text('Name'),
               ),
             ],
