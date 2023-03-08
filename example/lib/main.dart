@@ -49,6 +49,7 @@ class _PaginatedExpandableItemListExampleState
             },
             columns: [
               FittedTableColumn(
+                excessWidthPercentage: 0.25,
                 title: Text('Number'),
               ),
               FittedTableColumn(

@@ -57,12 +57,62 @@ class _FittedTableState<T> extends State<FittedTable<T>> {
     }
   }
 
+  bool hasAtLestOneExcessWidthPercentageSet() {
+    for (var column in widget.columns) {
+      if (column.excessWidthPercentage != null) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   Widget buildRow(FittedTableRow<T> fittedTableRow, T value) {
-    Widget row = Row(
-      children: [
-        for (FittedTableCell cell in fittedTableRow.cells) cell.content
-      ],
-    );
+    final useExpandedOnAllCells = !hasAtLestOneExcessWidthPercentageSet();
+
+    Widget row;
+    if (useExpandedOnAllCells) {
+      row = Row(
+        children: [
+          for (FittedTableCell cell in fittedTableRow.cells)
+            Expanded(child: cell.content)
+        ],
+      );
+    } else {
+      List<Widget> buildCells(BoxConstraints constraints) {
+        final maxWidth = constraints.maxWidth;
+        final decimalIndividualCellWidth =
+            maxWidth / widget.visibleColumnCounter;
+        final reminder = decimalIndividualCellWidth % 1;
+        final totalReminderWidth = reminder * widget.visibleColumnCounter;
+        final individualCellWidth = decimalIndividualCellWidth - reminder;
+
+        assert(totalReminderWidth != 0);
+        List<Widget> cells = [];
+        for (var i = 0; i < widget.columns.length; i += 1) {
+          final percentOfRemainderWidth =
+              widget.columns[i].excessWidthPercentage;
+
+          cells.add(
+            SizedBox(
+              width: percentOfRemainderWidth == null
+                  ? individualCellWidth
+                  : individualCellWidth +
+                      (percentOfRemainderWidth * totalReminderWidth),
+              child: fittedTableRow.cells[i].content,
+            ),
+          );
+        }
+        return cells;
+      }
+
+      row = LayoutBuilder(
+        builder: (context, constraints) {
+          return Row(
+            children: buildCells(constraints),
+          );
+        },
+      );
+    }
 
     if (fittedTableRow.padding != null) {
       row = Padding(padding: fittedTableRow.padding!, child: row);
