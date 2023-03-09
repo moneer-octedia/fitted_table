@@ -10,12 +10,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'PaginatedExpandableItemListExample',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return FittedTableTheme(
+      fittedTableThemeData: FittedTableThemeData(
+        evenDataRowColor: Colors.brown.withOpacity(0.6),
+        oddDataRowColor: Colors.grey.withOpacity(0.6),
+        dataRowPadding: const EdgeInsets.all(24),
+        headerRowPadding:
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        headerRowColor: Colors.green,
       ),
-      home: const PaginatedExpandableItemListExample(),
+      child: MaterialApp(
+        title: 'PaginatedExpandableItemListExample',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const PaginatedExpandableItemListExample(),
+      ),
     );
   }
 }
@@ -42,12 +52,6 @@ class _PaginatedExpandableItemListExampleState
           )),
           child: FittedTable(
             onTapDataRow: (user) {},
-            evenDataRowColor: Colors.brown.withOpacity(0.6),
-            oddDataRowColor: Colors.grey.withOpacity(0.6),
-            dataRowPadding: const EdgeInsets.all(24),
-            headerRowPadding:
-                const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            headerRowColor: Colors.green,
             visibleNumberOfColumns: 3,
             future: (int pageKey, int pageSize) async {
               await Future.delayed(const Duration(milliseconds: 250));
