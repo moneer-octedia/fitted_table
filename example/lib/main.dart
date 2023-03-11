@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         headerRowColor: Colors.green,
       ),
       child: MaterialApp(
-        title: 'PaginatedExpandableItemListExample',
+        title: 'FittedTableExample',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
@@ -53,15 +53,9 @@ class _PaginatedExpandableItemListExampleState
           child: FittedTable(
             onTapDataRow: (user) {},
             visibleNumberOfColumns: 3,
-            future: (int pageKey, int pageSize) async {
-              await Future.delayed(const Duration(milliseconds: 250));
-              return List.generate(
-                  pageSize, (index) => UserRecord(pageKey + index));
-            },
             columns: [
-              ExpandFittedTableColumn(width: 24),
+              ExpandFittedTableColumn(),
               FittedTableColumn(
-                width: 24,
                 title: Text('#'),
               ),
               FittedTableColumn(
@@ -72,7 +66,7 @@ class _PaginatedExpandableItemListExampleState
                 title: Text('Name'),
               ),
             ],
-            dataRowBuilder: (BuildContext context, user, int index) {
+            rows: List.generate(24, (index) {
               return FittedTableRow(cells: [
                 ExpandFittedTableCell(
                   icon: ColoredBox(
@@ -84,7 +78,7 @@ class _PaginatedExpandableItemListExampleState
                     color: Colors.blueGrey,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('${user.number}'),
+                      child: Text('$index'),
                     ),
                   ),
                 ),
@@ -93,7 +87,7 @@ class _PaginatedExpandableItemListExampleState
                     color: Colors.blueGrey,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('${user.motto}'),
+                      child: Text('all same motto'),
                     ),
                   ),
                 ),
@@ -102,13 +96,71 @@ class _PaginatedExpandableItemListExampleState
                     color: Colors.blueGrey,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('${user.name}'),
+                      child: Text('same name'),
                     ),
                   ),
                 )
               ]);
-            },
+            }),
           ),
+          // child: FittedTable.paginated(
+          //   onTapDataRow: (user) {},
+          //   visibleNumberOfColumns: 3,
+          //   future: (int pageKey, int pageSize) async {
+          //     await Future.delayed(const Duration(milliseconds: 250));
+          //     return List.generate(
+          //         pageSize, (index) => UserRecord(pageKey + index));
+          //   },
+          //   columns: [
+          //     ExpandFittedTableColumn(),
+          //     FittedTableColumn(
+          //       title: Text('#'),
+          //     ),
+          //     FittedTableColumn(
+          //       title: Text('Motto'),
+          //     ),
+          //     FittedTableColumn(
+          //       width: 100,
+          //       title: Text('Name'),
+          //     ),
+          //   ],
+          //   dataRowBuilder: (BuildContext context, user, int index) {
+          //     return FittedTableRow(cells: [
+          //       ExpandFittedTableCell(
+          //         icon: ColoredBox(
+          //             color: Colors.blueGrey,
+          //             child: Icon(Icons.add_circle_outline)),
+          //       ),
+          //       FittedTableCell(
+          //         content: ColoredBox(
+          //           color: Colors.blueGrey,
+          //           child: Padding(
+          //             padding: const EdgeInsets.all(8.0),
+          //             child: Text('${user.number}'),
+          //           ),
+          //         ),
+          //       ),
+          //       FittedTableCell(
+          //         content: ColoredBox(
+          //           color: Colors.blueGrey,
+          //           child: Padding(
+          //             padding: const EdgeInsets.all(8.0),
+          //             child: Text('${user.motto}'),
+          //           ),
+          //         ),
+          //       ),
+          //       FittedTableCell(
+          //         content: ColoredBox(
+          //           color: Colors.blueGrey,
+          //           child: Padding(
+          //             padding: const EdgeInsets.all(8.0),
+          //             child: Text('${user.name}'),
+          //           ),
+          //         ),
+          //       )
+          //     ]);
+          //   },
+          // ),
         ),
       ),
     );

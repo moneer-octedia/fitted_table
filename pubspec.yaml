@@ -1,7 +1,7 @@
 name: fitted_table
-description: A new Flutter project.
-version: 0.0.1
-homepage:
+description: A customaizable table with intuitive behavior that allows for pagination, and has expandable rows.
+version: 0.0.1-beta.1
+homepage: https://github.com/moneer-octedia/fitted_table
 
 environment:
   sdk: '>=2.19.2 <3.0.0'

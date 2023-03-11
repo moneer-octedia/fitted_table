@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class FittedTableTheme extends InheritedWidget {
-  const FittedTableTheme({required this.fittedTableThemeData, required super.child});
+  const FittedTableTheme(
+      {super.key, required this.fittedTableThemeData, required super.child});
 
   static FittedTableThemeData of(BuildContext context) {
     return context

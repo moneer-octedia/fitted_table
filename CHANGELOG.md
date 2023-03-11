@@ -1,3 +1,3 @@
-## 0.0.1
+## 0.0.1-beta.1
 
-* TODO: Describe initial release.
+* Implements width determining idea. Supports for pagination, and expandable rows.
