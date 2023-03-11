@@ -90,28 +90,6 @@ class _DataReadyFittedTable<T> extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       final evenColumnWidth =
           fittedTable.resolveEvenColumnWidth(context, constraints);
-
-      List<Widget> buildSliverRows() {
-        List<Widget> fittedTableDataRows = [];
-        for (var i = 0; i < rows.length; i += 1) {
-          final row = rows[i];
-
-          fittedTableDataRows.add(
-            SliverToBoxAdapter(
-              child: _FittedTableDataRow<T>(
-                constraints: constraints,
-                evenColumnWidth: evenColumnWidth,
-                value: row.value,
-                index: i,
-                fittedTableRow: row,
-              ),
-            ),
-          );
-        }
-
-        return fittedTableDataRows;
-      }
-
       return CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -124,7 +102,20 @@ class _DataReadyFittedTable<T> extends StatelessWidget {
               ),
             ),
           ),
-          ...buildSliverRows()
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final row = rows[index];
+              return _FittedTableDataRow<T>(
+                constraints: constraints,
+                evenColumnWidth: evenColumnWidth,
+                value: row.value,
+                index: index,
+                fittedTableRow: row,
+              );
+            },
+            childCount: rows.length,
+          ))
         ],
       );
       // return ListView.builder(itemBuilder: widget.dataRowBuilder)
