@@ -13,8 +13,21 @@ class FittedTable<T> extends StatelessWidget {
     required this.columns,
     this.onTapDataRow,
     required List<FittedTableRow> rows,
-  }) : child = _DataReadyFittedTable<T>(
+  }) : child = _FittedTableWithRowList<T>(
           rows: rows,
+        );
+
+  FittedTable.builder({
+    super.key,
+    required this.visibleNumberOfColumns,
+    required this.columns,
+    this.onTapDataRow,
+    required FittedTableRow Function(BuildContext context, int index)
+        rowBuilder,
+    int? rowCount,
+  }) : child = _FittedTableWithRowBuilder<T>(
+          rowBuilder: rowBuilder,
+          rowCount: rowCount,
         );
 
   FittedTable.paginated({
@@ -26,9 +39,21 @@ class FittedTable<T> extends StatelessWidget {
     required FittedTableRow<T> Function(
             BuildContext context, T value, int index)
         dataRowBuilder,
+    WidgetBuilder? firstPageErrorIndicatorBuilder,
+    WidgetBuilder? newPageErrorIndicatorBuilder,
+    WidgetBuilder? firstPageProgressIndicatorBuilder,
+    WidgetBuilder? newPageProgressIndicatorBuilder,
+    WidgetBuilder? noItemsFoundIndicatorBuilder,
+    WidgetBuilder? noMoreItemsIndicatorBuilder,
   }) : child = _PaginatedFittedTable<T>(
           future: future,
           dataRowBuilder: dataRowBuilder,
+          firstPageErrorIndicatorBuilder: firstPageErrorIndicatorBuilder,
+          newPageErrorIndicatorBuilder: newPageErrorIndicatorBuilder,
+          firstPageProgressIndicatorBuilder: firstPageProgressIndicatorBuilder,
+          newPageProgressIndicatorBuilder: newPageProgressIndicatorBuilder,
+          noItemsFoundIndicatorBuilder: noItemsFoundIndicatorBuilder,
+          noMoreItemsIndicatorBuilder: noMoreItemsIndicatorBuilder,
         );
 
   static FittedTable<T> of<T>(BuildContext context) {
@@ -76,13 +101,64 @@ class FittedTable<T> extends StatelessWidget {
   }
 }
 
-class _DataReadyFittedTable<T> extends StatelessWidget {
-  const _DataReadyFittedTable({
+class _FittedTableWithRowList<T> extends StatelessWidget {
+  const _FittedTableWithRowList({
     Key? key,
     required this.rows,
   }) : super(key: key);
 
   final List<FittedTableRow> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    final fittedTable = FittedTable.of<T>(context);
+    return LayoutBuilder(builder: (context, constraints) {
+      final evenColumnWidth =
+          fittedTable.resolveEvenColumnWidth(context, constraints);
+
+      return CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            automaticallyImplyLeading: false,
+            flexibleSpace: FlexibleSpaceBar(
+              background: _FittedTableHeaderRow<T>(
+                constraints: constraints,
+                evenColumnWidth: evenColumnWidth,
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                for (var i = rows.length; i < rows.length; i += 1)
+                  _FittedTableDataRow<T>(
+                    constraints: constraints,
+                    evenColumnWidth: evenColumnWidth,
+                    value: rows[i].value,
+                    index: i,
+                    fittedTableRow: rows[i],
+                  ),
+              ],
+              addAutomaticKeepAlives: true,
+            ),
+          )
+        ],
+      );
+      // return ListView.builder(itemBuilder: widget.dataRowBuilder)
+    });
+  }
+}
+
+class _FittedTableWithRowBuilder<T> extends StatelessWidget {
+  const _FittedTableWithRowBuilder({
+    Key? key,
+    required this.rowBuilder,
+    this.rowCount,
+  }) : super(key: key);
+
+  final FittedTableRow Function(BuildContext context, int index) rowBuilder;
+  final int? rowCount;
 
   @override
   Widget build(BuildContext context) {
@@ -103,19 +179,21 @@ class _DataReadyFittedTable<T> extends StatelessWidget {
             ),
           ),
           SliverList(
-              delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final row = rows[index];
-              return _FittedTableDataRow<T>(
-                constraints: constraints,
-                evenColumnWidth: evenColumnWidth,
-                value: row.value,
-                index: index,
-                fittedTableRow: row,
-              );
-            },
-            childCount: rows.length,
-          ))
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final row = rowBuilder(context, index);
+                return _FittedTableDataRow<T>(
+                  constraints: constraints,
+                  evenColumnWidth: evenColumnWidth,
+                  value: row.value,
+                  index: index,
+                  fittedTableRow: row,
+                );
+              },
+              addAutomaticKeepAlives: true,
+              childCount: rowCount,
+            ),
+          )
         ],
       );
       // return ListView.builder(itemBuilder: widget.dataRowBuilder)
@@ -130,11 +208,24 @@ class _PaginatedFittedTable<T> extends StatefulWidget {
     Key? key,
     required this.future,
     required this.dataRowBuilder,
+    this.firstPageErrorIndicatorBuilder,
+    this.newPageErrorIndicatorBuilder,
+    this.firstPageProgressIndicatorBuilder,
+    this.newPageProgressIndicatorBuilder,
+    this.noItemsFoundIndicatorBuilder,
+    this.noMoreItemsIndicatorBuilder,
   }) : super(key: key);
 
   final Future<List<T>> Function(int pageKey, int pageSize) future;
   final FittedTableRow<T> Function(BuildContext context, T value, int index)
       dataRowBuilder;
+
+  final WidgetBuilder? firstPageErrorIndicatorBuilder;
+  final WidgetBuilder? newPageErrorIndicatorBuilder;
+  final WidgetBuilder? firstPageProgressIndicatorBuilder;
+  final WidgetBuilder? newPageProgressIndicatorBuilder;
+  final WidgetBuilder? noItemsFoundIndicatorBuilder;
+  final WidgetBuilder? noMoreItemsIndicatorBuilder;
 
   @override
   State<_PaginatedFittedTable<T>> createState() =>
@@ -196,18 +287,29 @@ class _PaginatedFittedTableState<T> extends State<_PaginatedFittedTable<T>> {
             pagingController: pagingController,
             addAutomaticKeepAlives: true,
             builderDelegate: PagedChildBuilderDelegate<T>(
+                firstPageErrorIndicatorBuilder:
+                    widget.firstPageErrorIndicatorBuilder,
+                newPageErrorIndicatorBuilder:
+                    widget.newPageErrorIndicatorBuilder,
+                firstPageProgressIndicatorBuilder:
+                    widget.firstPageProgressIndicatorBuilder,
+                newPageProgressIndicatorBuilder:
+                    widget.newPageProgressIndicatorBuilder,
+                noItemsFoundIndicatorBuilder:
+                    widget.noItemsFoundIndicatorBuilder,
+                noMoreItemsIndicatorBuilder: widget.noMoreItemsIndicatorBuilder,
                 itemBuilder: (context, value, index) {
-              final fittedTableRow =
-                  widget.dataRowBuilder(context, value, index);
+                  final fittedTableRow =
+                      widget.dataRowBuilder(context, value, index);
 
-              return _FittedTableDataRow(
-                constraints: constraints,
-                evenColumnWidth: evenColumnWidth,
-                value: value,
-                index: index,
-                fittedTableRow: fittedTableRow,
-              );
-            }),
+                  return _FittedTableDataRow(
+                    constraints: constraints,
+                    evenColumnWidth: evenColumnWidth,
+                    value: value,
+                    index: index,
+                    fittedTableRow: fittedTableRow,
+                  );
+                }),
           ),
         ],
       );

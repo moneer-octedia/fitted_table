@@ -21,25 +21,24 @@ class MyApp extends StatelessWidget {
       ),
       child: MaterialApp(
         title: 'FittedTableExample',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const PaginatedExpandableItemListExample(),
+        home: const FittedTableExample(),
       ),
     );
   }
 }
 
-class PaginatedExpandableItemListExample extends StatefulWidget {
-  const PaginatedExpandableItemListExample({Key? key}) : super(key: key);
+class FittedTableExample extends StatefulWidget {
+  const FittedTableExample({Key? key}) : super(key: key);
 
   @override
-  State<PaginatedExpandableItemListExample> createState() =>
-      _PaginatedExpandableItemListExampleState();
+  State<FittedTableExample> createState() => _FittedTableExampleState();
 }
 
-class _PaginatedExpandableItemListExampleState
-    extends State<PaginatedExpandableItemListExample> {
+class _FittedTableExampleState extends State<FittedTableExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,118 +49,118 @@ class _PaginatedExpandableItemListExampleState
               shape: RoundedRectangleBorder(
             side: BorderSide(color: Colors.green),
           )),
-          child: FittedTable(
-            onTapDataRow: (user) {},
-            visibleNumberOfColumns: 3,
-            columns: [
-              ExpandFittedTableColumn(),
-              FittedTableColumn(
-                title: Text('#'),
-              ),
-              FittedTableColumn(
-                title: Text('Motto'),
-              ),
-              FittedTableColumn(
-                width: 100,
-                title: Text('Name'),
-              ),
-            ],
-            rows: List.generate(24, (index) {
-              return FittedTableRow(cells: [
-                ExpandFittedTableCell(
-                  icon: ColoredBox(
+          child: FittedTable.builder(
+              onTapDataRow: (user) {},
+              visibleNumberOfColumns: 3,
+              columns: [
+                ExpandFittedTableColumn(),
+                FittedTableColumn(
+                  title: Text('#'),
+                ),
+                FittedTableColumn(
+                  title: Text('Motto'),
+                ),
+                FittedTableColumn(
+                  width: 100,
+                  title: Text('Name'),
+                ),
+              ],
+              rowCount: 100,
+              rowBuilder: (context, index) {
+                return FittedTableRow(cells: [
+                  ExpandFittedTableCell(
+                    icon: ColoredBox(
+                        color: Colors.blueGrey,
+                        child: Icon(Icons.add_circle_outline)),
+                  ),
+                  FittedTableCell(
+                    content: ColoredBox(
                       color: Colors.blueGrey,
-                      child: Icon(Icons.add_circle_outline)),
-                ),
-                FittedTableCell(
-                  content: ColoredBox(
-                    color: Colors.blueGrey,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('$index'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('$index'),
+                      ),
                     ),
                   ),
-                ),
-                FittedTableCell(
-                  content: ColoredBox(
-                    color: Colors.blueGrey,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('all same motto'),
+                  FittedTableCell(
+                    content: ColoredBox(
+                      color: Colors.blueGrey,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('all same motto'),
+                      ),
                     ),
                   ),
-                ),
-                FittedTableCell(
-                  content: ColoredBox(
-                    color: Colors.blueGrey,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('same name'),
+                  FittedTableCell(
+                    content: ColoredBox(
+                      color: Colors.blueGrey,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('same name'),
+                      ),
                     ),
-                  ),
-                )
-              ]);
-            }),
-          ),
-          // child: FittedTable.paginated(
-          //   onTapDataRow: (user) {},
-          //   visibleNumberOfColumns: 3,
-          //   future: (int pageKey, int pageSize) async {
-          //     await Future.delayed(const Duration(milliseconds: 250));
-          //     return List.generate(
-          //         pageSize, (index) => UserRecord(pageKey + index));
-          //   },
-          //   columns: [
-          //     ExpandFittedTableColumn(),
-          //     FittedTableColumn(
-          //       title: Text('#'),
-          //     ),
-          //     FittedTableColumn(
-          //       title: Text('Motto'),
-          //     ),
-          //     FittedTableColumn(
-          //       width: 100,
-          //       title: Text('Name'),
-          //     ),
-          //   ],
-          //   dataRowBuilder: (BuildContext context, user, int index) {
-          //     return FittedTableRow(cells: [
-          //       ExpandFittedTableCell(
-          //         icon: ColoredBox(
-          //             color: Colors.blueGrey,
-          //             child: Icon(Icons.add_circle_outline)),
-          //       ),
-          //       FittedTableCell(
-          //         content: ColoredBox(
-          //           color: Colors.blueGrey,
-          //           child: Padding(
-          //             padding: const EdgeInsets.all(8.0),
-          //             child: Text('${user.number}'),
-          //           ),
-          //         ),
-          //       ),
-          //       FittedTableCell(
-          //         content: ColoredBox(
-          //           color: Colors.blueGrey,
-          //           child: Padding(
-          //             padding: const EdgeInsets.all(8.0),
-          //             child: Text('${user.motto}'),
-          //           ),
-          //         ),
-          //       ),
-          //       FittedTableCell(
-          //         content: ColoredBox(
-          //           color: Colors.blueGrey,
-          //           child: Padding(
-          //             padding: const EdgeInsets.all(8.0),
-          //             child: Text('${user.name}'),
-          //           ),
-          //         ),
-          //       )
-          //     ]);
-          //   },
-          // ),
+                  )
+                ]);
+              }),
         ),
+        // child: FittedTable.paginated(
+        //   onTapDataRow: (user) {},
+        //   visibleNumberOfColumns: 3,
+        //   future: (int pageKey, int pageSize) async {
+        //     await Future.delayed(const Duration(milliseconds: 250));
+        //     return List.generate(
+        //         pageSize, (index) => UserRecord(pageKey + index));
+        //   },
+        //   columns: [
+        //     ExpandFittedTableColumn(),
+        //     FittedTableColumn(
+        //       title: Text('#'),
+        //     ),
+        //     FittedTableColumn(
+        //       title: Text('Motto'),
+        //     ),
+        //     FittedTableColumn(
+        //       width: 100,
+        //       title: Text('Name'),
+        //     ),
+        //   ],
+        //   dataRowBuilder: (BuildContext context, user, int index) {
+        //     return FittedTableRow(cells: [
+        //       ExpandFittedTableCell(
+        //         icon: ColoredBox(
+        //             color: Colors.blueGrey,
+        //             child: Icon(Icons.add_circle_outline)),
+        //       ),
+        //       FittedTableCell(
+        //         content: ColoredBox(
+        //           color: Colors.blueGrey,
+        //           child: Padding(
+        //             padding: const EdgeInsets.all(8.0),
+        //             child: Text('${user.number}'),
+        //           ),
+        //         ),
+        //       ),
+        //       FittedTableCell(
+        //         content: ColoredBox(
+        //           color: Colors.blueGrey,
+        //           child: Padding(
+        //             padding: const EdgeInsets.all(8.0),
+        //             child: Text('${user.motto}'),
+        //           ),
+        //         ),
+        //       ),
+        //       FittedTableCell(
+        //         content: ColoredBox(
+        //           color: Colors.blueGrey,
+        //           child: Padding(
+        //             padding: const EdgeInsets.all(8.0),
+        //             child: Text('${user.name}'),
+        //           ),
+        //         ),
+        //       )
+        //     ]);
+        //   },
+        // ),
       ),
     );
   }
