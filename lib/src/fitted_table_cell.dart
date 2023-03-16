@@ -9,3 +9,4 @@ class FittedTableCell {
 class ExpandFittedTableCell extends FittedTableCell {
   ExpandFittedTableCell({required Widget icon}) : super(content: icon);
 }
+

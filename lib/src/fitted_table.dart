@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
@@ -111,41 +112,39 @@ class _FittedTableWithRowList<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     final fittedTable = FittedTable.of<T>(context);
     return LayoutBuilder(builder: (context, constraints) {
       final evenColumnWidth =
           fittedTable.resolveEvenColumnWidth(context, constraints);
 
-      return CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            automaticallyImplyLeading: false,
-            flexibleSpace: FlexibleSpaceBar(
-              background: _FittedTableHeaderRow<T>(
-                constraints: constraints,
-                evenColumnWidth: evenColumnWidth,
-              ),
-            ),
+      return Column(
+        children: [
+          _FittedTableHeaderRow<T>(
+            constraints: constraints,
+            evenColumnWidth: evenColumnWidth,
           ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                for (var i = rows.length; i < rows.length; i += 1)
-                  _FittedTableDataRow<T>(
-                    constraints: constraints,
-                    evenColumnWidth: evenColumnWidth,
-                    value: rows[i].value,
-                    index: i,
-                    fittedTableRow: rows[i],
-                  ),
-              ],
-              addAutomaticKeepAlives: true,
-            ),
-          )
+          CustomScrollView(
+            slivers: [
+              SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    for (var i = rows.length; i < rows.length; i += 1)
+                      _FittedTableDataRow<T>(
+                        constraints: constraints,
+                        evenColumnWidth: evenColumnWidth,
+                        value: rows[i].value,
+                        index: i,
+                        fittedTableRow: rows[i],
+                      ),
+                  ],
+                  addAutomaticKeepAlives: true,
+                ),
+              )
+            ],
+          ),
         ],
       );
-      // return ListView.builder(itemBuilder: widget.dataRowBuilder)
     });
   }
 }
@@ -166,37 +165,36 @@ class _FittedTableWithRowBuilder<T> extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       final evenColumnWidth =
           fittedTable.resolveEvenColumnWidth(context, constraints);
-      return CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            automaticallyImplyLeading: false,
-            flexibleSpace: FlexibleSpaceBar(
-              background: _FittedTableHeaderRow<T>(
-                constraints: constraints,
-                evenColumnWidth: evenColumnWidth,
-              ),
+      return Column(
+        children: [
+          _FittedTableHeaderRow<T>(
+            constraints: constraints,
+            evenColumnWidth: evenColumnWidth,
+          ),
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final row = rowBuilder(context, index);
+                      return _FittedTableDataRow<T>(
+                        constraints: constraints,
+                        evenColumnWidth: evenColumnWidth,
+                        value: row.value,
+                        index: index,
+                        fittedTableRow: row,
+                      );
+                    },
+                    addAutomaticKeepAlives: true,
+                    childCount: rowCount,
+                  ),
+                )
+              ],
             ),
           ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final row = rowBuilder(context, index);
-                return _FittedTableDataRow<T>(
-                  constraints: constraints,
-                  evenColumnWidth: evenColumnWidth,
-                  value: row.value,
-                  index: index,
-                  fittedTableRow: row,
-                );
-              },
-              addAutomaticKeepAlives: true,
-              childCount: rowCount,
-            ),
-          )
         ],
       );
-      // return ListView.builder(itemBuilder: widget.dataRowBuilder)
     });
   }
 }
@@ -271,48 +269,49 @@ class _PaginatedFittedTableState<T> extends State<_PaginatedFittedTable<T>> {
     return LayoutBuilder(builder: (context, constraints) {
       final evenColumnWidth =
           fittedTable.resolveEvenColumnWidth(context, constraints);
-      return CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            automaticallyImplyLeading: false,
-            flexibleSpace: FlexibleSpaceBar(
-              background: _FittedTableHeaderRow<T>(
-                constraints: constraints,
-                evenColumnWidth: evenColumnWidth,
-              ),
-            ),
+      return Column(children: [
+        FlexibleSpaceBar(
+          background: _FittedTableHeaderRow<T>(
+            constraints: constraints,
+            evenColumnWidth: evenColumnWidth,
           ),
-          PagedSliverList(
-            pagingController: pagingController,
-            addAutomaticKeepAlives: true,
-            builderDelegate: PagedChildBuilderDelegate<T>(
-                firstPageErrorIndicatorBuilder:
-                    widget.firstPageErrorIndicatorBuilder,
-                newPageErrorIndicatorBuilder:
-                    widget.newPageErrorIndicatorBuilder,
-                firstPageProgressIndicatorBuilder:
-                    widget.firstPageProgressIndicatorBuilder,
-                newPageProgressIndicatorBuilder:
-                    widget.newPageProgressIndicatorBuilder,
-                noItemsFoundIndicatorBuilder:
-                    widget.noItemsFoundIndicatorBuilder,
-                noMoreItemsIndicatorBuilder: widget.noMoreItemsIndicatorBuilder,
-                itemBuilder: (context, value, index) {
-                  final fittedTableRow =
-                      widget.dataRowBuilder(context, value, index);
+        ),
+        Expanded(
+          child: CustomScrollView(
+            slivers: [
+              PagedSliverList(
+                pagingController: pagingController,
+                addAutomaticKeepAlives: true,
+                builderDelegate: PagedChildBuilderDelegate<T>(
+                    firstPageErrorIndicatorBuilder:
+                        widget.firstPageErrorIndicatorBuilder,
+                    newPageErrorIndicatorBuilder:
+                        widget.newPageErrorIndicatorBuilder,
+                    firstPageProgressIndicatorBuilder:
+                        widget.firstPageProgressIndicatorBuilder,
+                    newPageProgressIndicatorBuilder:
+                        widget.newPageProgressIndicatorBuilder,
+                    noItemsFoundIndicatorBuilder:
+                        widget.noItemsFoundIndicatorBuilder,
+                    noMoreItemsIndicatorBuilder:
+                        widget.noMoreItemsIndicatorBuilder,
+                    itemBuilder: (context, value, index) {
+                      final fittedTableRow =
+                          widget.dataRowBuilder(context, value, index);
 
-                  return _FittedTableDataRow(
-                    constraints: constraints,
-                    evenColumnWidth: evenColumnWidth,
-                    value: value,
-                    index: index,
-                    fittedTableRow: fittedTableRow,
-                  );
-                }),
+                      return _FittedTableDataRow(
+                        constraints: constraints,
+                        evenColumnWidth: evenColumnWidth,
+                        value: value,
+                        index: index,
+                        fittedTableRow: fittedTableRow,
+                      );
+                    }),
+              ),
+            ],
           ),
-        ],
-      );
+        )
+      ]);
     });
     // return RefreshIndicator(
     //   onRefresh: () => Future.sync(
