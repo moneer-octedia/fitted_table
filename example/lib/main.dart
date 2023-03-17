@@ -12,9 +12,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return FittedTableTheme(
       fittedTableThemeData: FittedTableThemeData(
-        evenDataRowColor: Colors.brown.withOpacity(0.6),
-        oddDataRowColor: Colors.grey.withOpacity(0.6),
-        dataRowPadding: const EdgeInsets.all(24),
+        evenRowColor: Colors.brown.withOpacity(0.6),
+        oddRowColor: Colors.grey.withOpacity(0.6),
+        rowPadding: const EdgeInsets.all(24),
         headerRowPadding:
             const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         headerRowColor: Colors.green,
@@ -50,17 +50,17 @@ class _FittedTableExampleState extends State<FittedTableExample> {
             side: BorderSide(color: Colors.green),
           )),
           child: FittedTable.builder(
-              onTapDataRow: (user) {},
+              onTapRow: (user) {},
               visibleNumberOfColumns: 3,
               columns: [
-                ExpandFittedTableColumn(),
-                FittedTableColumn(
+                FittedColumn.expand(),
+                FittedColumn(
                   title: Text('#'),
                 ),
-                FittedTableColumn(
+                FittedColumn(
                   title: Text('Motto'),
                 ),
-                FittedTableColumn(
+                FittedColumn.tight(
                   width: 100,
                   title: Text('Name'),
                 ),
@@ -68,7 +68,7 @@ class _FittedTableExampleState extends State<FittedTableExample> {
               rowCount: 100,
               rowBuilder: (context, index) {
                 return FittedTableRow(cells: [
-                  ExpandFittedTableCell(
+                  ExpandFittedCell(
                     icon: ColoredBox(
                         color: Colors.blueGrey,
                         child: Icon(Icons.add_circle_outline)),

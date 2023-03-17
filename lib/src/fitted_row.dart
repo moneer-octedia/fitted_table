@@ -1,4 +1,4 @@
-import 'fitted_table_cell.dart';
+import 'fitted_cell.dart';
 
 class FittedTableRow<T> {
   const FittedTableRow({

@@ -22,18 +22,18 @@ class FittedTableThemeData {
   const FittedTableThemeData({
     this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
     this.expandableDataRows = false,
-    this.evenDataRowColor,
-    this.oddDataRowColor,
+    this.evenRowColor,
+    this.oddRowColor,
     this.headerRowColor,
-    this.dataRowPadding,
+    this.rowPadding,
     this.headerRowPadding,
   });
 
   final MainAxisAlignment mainAxisAlignment;
-  final Color? evenDataRowColor;
-  final Color? oddDataRowColor;
+  final Color? evenRowColor;
+  final Color? oddRowColor;
   final Color? headerRowColor;
-  final EdgeInsetsGeometry? dataRowPadding;
+  final EdgeInsetsGeometry? rowPadding;
   final EdgeInsetsGeometry? headerRowPadding;
   final bool expandableDataRows;
 }

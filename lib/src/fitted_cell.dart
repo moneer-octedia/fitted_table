@@ -6,7 +6,7 @@ class FittedTableCell {
   final Widget content;
 }
 
-class ExpandFittedTableCell extends FittedTableCell {
-  ExpandFittedTableCell({required Widget icon}) : super(content: icon);
+class ExpandFittedCell extends FittedTableCell {
+  ExpandFittedCell({required Widget icon}) : super(content: icon);
 }
 

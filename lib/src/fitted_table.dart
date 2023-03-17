@@ -1,18 +1,20 @@
+library fitted_table_lib;
 
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-import 'fitted_table_column.dart';
-import 'fitted_table_row.dart';
-import 'fitted_table_cell.dart';
+import 'fitted_row.dart';
+import 'fitted_cell.dart';
 import 'fitted_table_theme.dart';
+
+part 'fitted_column.dart';
 
 class FittedTable<T> extends StatelessWidget {
   FittedTable({
     super.key,
     required this.visibleNumberOfColumns,
     required this.columns,
-    this.onTapDataRow,
+    this.onTapRow,
     required List<FittedTableRow> rows,
   }) : child = _FittedTableWithRowList<T>(
           rows: rows,
@@ -22,7 +24,7 @@ class FittedTable<T> extends StatelessWidget {
     super.key,
     required this.visibleNumberOfColumns,
     required this.columns,
-    this.onTapDataRow,
+    this.onTapRow,
     required FittedTableRow Function(BuildContext context, int index)
         rowBuilder,
     int? rowCount,
@@ -35,11 +37,11 @@ class FittedTable<T> extends StatelessWidget {
     super.key,
     required this.visibleNumberOfColumns,
     required this.columns,
-    this.onTapDataRow,
+    this.onTapRow,
     required Future<List<T>> Function(int pageKey, int pageSize) future,
     required FittedTableRow<T> Function(
             BuildContext context, T value, int index)
-        dataRowBuilder,
+        rowBuilder,
     WidgetBuilder? firstPageErrorIndicatorBuilder,
     WidgetBuilder? newPageErrorIndicatorBuilder,
     WidgetBuilder? firstPageProgressIndicatorBuilder,
@@ -48,7 +50,7 @@ class FittedTable<T> extends StatelessWidget {
     WidgetBuilder? noMoreItemsIndicatorBuilder,
   }) : child = _PaginatedFittedTable<T>(
           future: future,
-          dataRowBuilder: dataRowBuilder,
+          rowBuilder: rowBuilder,
           firstPageErrorIndicatorBuilder: firstPageErrorIndicatorBuilder,
           newPageErrorIndicatorBuilder: newPageErrorIndicatorBuilder,
           firstPageProgressIndicatorBuilder: firstPageProgressIndicatorBuilder,
@@ -62,8 +64,8 @@ class FittedTable<T> extends StatelessWidget {
   }
 
   final int visibleNumberOfColumns;
-  final List<FittedTableColumn> columns;
-  final void Function(T value)? onTapDataRow;
+  final List<FittedColumn> columns;
+  final void Function(T value)? onTapRow;
   final Widget child;
 
   @override
@@ -71,31 +73,33 @@ class FittedTable<T> extends StatelessWidget {
     return child;
   }
 
-  double? resolveEvenColumnWidth(
+  @visibleForTesting
+  double resolveEvenColumnWidth(
       BuildContext context, BoxConstraints constraints) {
     final fittedTableThemeData = FittedTableTheme.of(context);
     int evenColumnNumber = visibleNumberOfColumns;
     double totalSpecifiedWidth = 0.0;
+    double evenColumnWidth = constraints.maxWidth / evenColumnNumber;
 
     for (var i = 0; i < visibleNumberOfColumns; i += 1) {
-      final columnWidth = columns[i].width;
-      if (columnWidth != null) {
+      final column = columns[i];
+
+      if (column is FittedFlexedColumn) {
+        evenColumnNumber += column.flex - 1;
+      } else if (column is FittedTightColumn) {
         evenColumnNumber -= 1;
-        totalSpecifiedWidth += columnWidth;
+        totalSpecifiedWidth += column.width;
+      } else if (column is FittedExpandColumn && column.width != null) {
+        evenColumnNumber -= 1;
+        totalSpecifiedWidth += column.width!;
       }
     }
 
-    double? evenColumnWidth;
+    evenColumnWidth -= totalSpecifiedWidth / evenColumnNumber;
 
-    if (evenColumnNumber != 0) {
-      evenColumnWidth = constraints.maxWidth / evenColumnNumber;
-
-      evenColumnWidth -= totalSpecifiedWidth / evenColumnNumber;
-
-      if (fittedTableThemeData.dataRowPadding?.horizontal != null) {
-        evenColumnWidth -=
-            fittedTableThemeData.dataRowPadding!.horizontal / evenColumnNumber;
-      }
+    if (fittedTableThemeData.rowPadding?.horizontal != null) {
+      evenColumnWidth -=
+          fittedTableThemeData.rowPadding!.horizontal / evenColumnNumber;
     }
 
     return evenColumnWidth;
@@ -112,7 +116,6 @@ class _FittedTableWithRowList<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final fittedTable = FittedTable.of<T>(context);
     return LayoutBuilder(builder: (context, constraints) {
       final evenColumnWidth =
@@ -130,7 +133,7 @@ class _FittedTableWithRowList<T> extends StatelessWidget {
                 delegate: SliverChildListDelegate(
                   [
                     for (var i = rows.length; i < rows.length; i += 1)
-                      _FittedTableDataRow<T>(
+                      _FittedTableRow<T>(
                         constraints: constraints,
                         evenColumnWidth: evenColumnWidth,
                         value: rows[i].value,
@@ -178,7 +181,7 @@ class _FittedTableWithRowBuilder<T> extends StatelessWidget {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final row = rowBuilder(context, index);
-                      return _FittedTableDataRow<T>(
+                      return _FittedTableRow<T>(
                         constraints: constraints,
                         evenColumnWidth: evenColumnWidth,
                         value: row.value,
@@ -205,7 +208,7 @@ class _PaginatedFittedTable<T> extends StatefulWidget {
   const _PaginatedFittedTable({
     Key? key,
     required this.future,
-    required this.dataRowBuilder,
+    required this.rowBuilder,
     this.firstPageErrorIndicatorBuilder,
     this.newPageErrorIndicatorBuilder,
     this.firstPageProgressIndicatorBuilder,
@@ -216,7 +219,7 @@ class _PaginatedFittedTable<T> extends StatefulWidget {
 
   final Future<List<T>> Function(int pageKey, int pageSize) future;
   final FittedTableRow<T> Function(BuildContext context, T value, int index)
-      dataRowBuilder;
+      rowBuilder;
 
   final WidgetBuilder? firstPageErrorIndicatorBuilder;
   final WidgetBuilder? newPageErrorIndicatorBuilder;
@@ -297,9 +300,9 @@ class _PaginatedFittedTableState<T> extends State<_PaginatedFittedTable<T>> {
                         widget.noMoreItemsIndicatorBuilder,
                     itemBuilder: (context, value, index) {
                       final fittedTableRow =
-                          widget.dataRowBuilder(context, value, index);
+                          widget.rowBuilder(context, value, index);
 
-                      return _FittedTableDataRow(
+                      return _FittedTableRow(
                         constraints: constraints,
                         evenColumnWidth: evenColumnWidth,
                         value: value,
@@ -324,11 +327,26 @@ class _PaginatedFittedTableState<T> extends State<_PaginatedFittedTable<T>> {
 
 class _FittedTableHeaderRow<T> extends StatelessWidget {
   const _FittedTableHeaderRow(
-      {Key? key, required this.constraints, this.evenColumnWidth})
+      {Key? key, required this.constraints, required this.evenColumnWidth})
       : super(key: key);
 
   final BoxConstraints constraints;
-  final double? evenColumnWidth;
+  final double evenColumnWidth;
+
+  double resolveFinalColumnWidth(FittedColumn fittedColumn) {
+    //
+    // if (fittedColumn is FittedFlexedColumn) {
+    //
+    // } else
+    if (fittedColumn is FittedTightColumn) {
+      return fittedColumn.width;
+    } else if (fittedColumn is FittedExpandColumn &&
+        fittedColumn.width != null) {
+      return fittedColumn.width!;
+    }
+
+    return evenColumnWidth;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -338,12 +356,13 @@ class _FittedTableHeaderRow<T> extends StatelessWidget {
     List<Widget> children = [];
 
     for (var i = 0; i < fittedTable.visibleNumberOfColumns; i += 1) {
-      final column = fittedTable.columns[i];
-      assert(column.width != null || evenColumnWidth != null);
+      final fittedColumn = fittedTable.columns[i];
+      // assert(column.width != null || evenColumnWidth != null);
       children.add(
         SizedBox(
-          width: column.width ?? evenColumnWidth,
-          child: Align(alignment: column.alignment, child: column.title),
+          width: resolveFinalColumnWidth(fittedColumn),
+          child: Align(
+              alignment: fittedColumn.alignment, child: fittedColumn.title),
         ),
       );
     }
@@ -365,32 +384,48 @@ class _FittedTableHeaderRow<T> extends StatelessWidget {
   }
 }
 
-class _FittedTableDataRow<T> extends StatefulWidget {
-  const _FittedTableDataRow(
+class _FittedTableRow<T> extends StatefulWidget {
+  const _FittedTableRow(
       {Key? key,
       required this.value,
       required this.index,
       required this.constraints,
-      this.evenColumnWidth,
+      required this.evenColumnWidth,
       required this.fittedTableRow})
       : super(key: key);
 
   final T value;
   final int index;
   final BoxConstraints constraints;
-  final double? evenColumnWidth;
+  final double evenColumnWidth;
   final FittedTableRow fittedTableRow;
 
   @override
-  State<_FittedTableDataRow<T>> createState() => _FittedTableDataRowState<T>();
+  State<_FittedTableRow<T>> createState() => _FittedTableRowState<T>();
 }
 
-class _FittedTableDataRowState<T> extends State<_FittedTableDataRow<T>>
+class _FittedTableRowState<T> extends State<_FittedTableRow<T>>
     with AutomaticKeepAliveClientMixin {
   bool isExpanded = false;
 
   @override
   bool get wantKeepAlive => isExpanded;
+
+  double resolveFinalColumnWidth(FittedColumn fittedColumn) {
+    var evenColumnWidth = widget.evenColumnWidth;
+    //
+    // if (fittedColumn is FittedFlexedColumn) {
+    //
+    // } else
+    if (fittedColumn is FittedTightColumn) {
+      return fittedColumn.width;
+    } else if (fittedColumn is FittedExpandColumn &&
+        fittedColumn.width != null) {
+      return fittedColumn.width!;
+    }
+
+    return evenColumnWidth;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -403,21 +438,21 @@ class _FittedTableDataRowState<T> extends State<_FittedTableDataRow<T>>
 
     for (var i = 0; i < fittedTable.visibleNumberOfColumns; i += 1) {
       final fittedTableCell = widget.fittedTableRow.cells[i];
-      final column = fittedTable.columns[i];
-      assert(column.width != null || widget.evenColumnWidth != null);
-      final isExpandColumn = column is ExpandFittedTableColumn;
+      final fittedColumn = fittedTable.columns[i];
+      // assert(column.width != null || widget.evenColumnWidth != null);
+      // final isExpandColumn = column is ExpandFittedColumn;
       assert(() {
-        if (isExpandColumn) {
-          return fittedTableCell is ExpandFittedTableCell;
-        }
+        // if (isExpandColumn) {
+        //   return fittedTableCell is ExpandTableCell;
+        // }
         return true;
       }());
       children.add(
         SizedBox(
-          width: column.width ?? widget.evenColumnWidth,
+          width: resolveFinalColumnWidth(fittedColumn),
           child: Align(
-              alignment: column.alignment,
-              child: isExpandColumn
+              alignment: fittedColumn.alignment,
+              child: fittedColumn is FittedExpandColumn
                   ? IconButton(
                       onPressed: () {
                         setState(() {
@@ -425,7 +460,7 @@ class _FittedTableDataRowState<T> extends State<_FittedTableDataRow<T>>
                         });
                       },
                       padding: EdgeInsets.zero,
-                      icon: (fittedTableCell as ExpandFittedTableCell).content)
+                      icon: fittedTableCell.content)
                   : fittedTableCell.content),
         ),
       );
@@ -440,7 +475,7 @@ class _FittedTableDataRowState<T> extends State<_FittedTableDataRow<T>>
         children: [
           row,
           SizedBox(
-            height: fittedTableThemeData.dataRowPadding!.horizontal / 2,
+            height: fittedTableThemeData.rowPadding!.horizontal / 2,
           ),
           _FittedTableExpand<T>(
             fittedTableRow: widget.fittedTableRow,
@@ -449,23 +484,21 @@ class _FittedTableDataRowState<T> extends State<_FittedTableDataRow<T>>
       );
     }
 
-    if (fittedTableThemeData.dataRowPadding != null) {
-      row = Padding(padding: fittedTableThemeData.dataRowPadding!, child: row);
+    if (fittedTableThemeData.rowPadding != null) {
+      row = Padding(padding: fittedTableThemeData.rowPadding!, child: row);
     }
 
     final isEven = widget.index % 2 == 0;
 
-    if (isEven && fittedTableThemeData.evenDataRowColor != null) {
-      row =
-          ColoredBox(color: fittedTableThemeData.evenDataRowColor!, child: row);
-    } else if (!isEven && fittedTableThemeData.oddDataRowColor != null) {
-      row =
-          ColoredBox(color: fittedTableThemeData.oddDataRowColor!, child: row);
+    if (isEven && fittedTableThemeData.evenRowColor != null) {
+      row = ColoredBox(color: fittedTableThemeData.evenRowColor!, child: row);
+    } else if (!isEven && fittedTableThemeData.oddRowColor != null) {
+      row = ColoredBox(color: fittedTableThemeData.oddRowColor!, child: row);
     }
 
-    if (fittedTable.onTapDataRow != null) {
-      row = InkWell(
-          onTap: () => fittedTable.onTapDataRow!(widget.value), child: row);
+    if (fittedTable.onTapRow != null) {
+      row =
+          InkWell(onTap: () => fittedTable.onTapRow!(widget.value), child: row);
     }
 
     return row;
