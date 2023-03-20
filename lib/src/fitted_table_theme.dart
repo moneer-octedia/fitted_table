@@ -27,12 +27,14 @@ class FittedTableThemeData {
     this.headerRowColor,
     this.rowPadding,
     this.headerRowPadding,
+    this.headerTextStyle,
   });
 
   final MainAxisAlignment mainAxisAlignment;
   final Color? evenRowColor;
   final Color? oddRowColor;
   final Color? headerRowColor;
+  final TextStyle? headerTextStyle;
   final EdgeInsetsGeometry? rowPadding;
   final EdgeInsetsGeometry? headerRowPadding;
   final bool expandableDataRows;

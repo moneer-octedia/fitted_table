@@ -380,6 +380,11 @@ class _FittedTableHeaderRow<T> extends StatelessWidget {
       row = ColoredBox(color: fittedTableThemeData.headerRowColor!, child: row);
     }
 
+    if (fittedTableThemeData.headerTextStyle != null) {
+      return DefaultTextStyle(
+          style: fittedTableThemeData.headerTextStyle!, child: row);
+    }
+
     return row;
   }
 }
