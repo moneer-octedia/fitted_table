@@ -1,4 +1,4 @@
-import 'fitted_cell.dart';
+part of fitted_table_lib;
 
 class FittedTableRow<T> {
   const FittedTableRow({
@@ -7,5 +7,5 @@ class FittedTableRow<T> {
   });
 
   final T? value;
-  final List<FittedTableCell> cells;
+  final List<FittedCell> cells;
 }

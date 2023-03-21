@@ -16,7 +16,7 @@ void main() {
         rows: [
           FittedTableRow(
               cells: List.generate(numberOfColumns,
-                  (index) => const FittedTableCell(content: Text('text'))))
+                  (index) => const FittedCell(content: Text('text'))))
         ]);
 
     final widgetToJustGetContext = FittedTableTheme(
@@ -54,7 +54,7 @@ void main() {
         rows: [
           FittedTableRow(
               cells: List.generate(numberOfColumns,
-                  (index) => const FittedTableCell(content: Text('text'))))
+                  (index) => const FittedCell(content: Text('text'))))
         ]);
 
     final widgetToJustGetContext = FittedTableTheme(

@@ -19,6 +19,13 @@ class FittedColumn {
       required double width,
       AlignmentGeometry alignment}) = FittedTightColumn;
 
+  // const factory FittedColumn.iconButton({
+  //   Widget title,
+  //   double? width,
+  //   AlignmentGeometry alignment,
+  //   required void Function(Object value) onPressed,
+  // }) = _FittedIconButtonColumn;
+
   final Widget title;
 
   final AlignmentGeometry alignment;
@@ -47,3 +54,15 @@ class FittedTightColumn extends FittedColumn {
 
   final double width;
 }
+
+// class _FittedIconButtonColumn extends FittedColumn {
+//   const _FittedIconButtonColumn({
+//     super.title = const SizedBox(),
+//     this.width,
+//     super.alignment,
+//     required this.onPressed,
+//   });
+//
+//   final void Function(Object value) onPressed;
+//   final double? width;
+// }

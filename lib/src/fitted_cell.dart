@@ -1,12 +1,14 @@
-import 'package:flutter/material.dart';
+part of fitted_table_lib;
 
-class FittedTableCell {
-  const FittedTableCell({required this.content});
+class FittedCell {
+  const FittedCell({required this.content});
+
+  const factory FittedCell.expand({required Widget icon}) =
+      _ExpandFittedCell;
 
   final Widget content;
 }
 
-class ExpandFittedCell extends FittedTableCell {
-  ExpandFittedCell({required Widget icon}) : super(content: icon);
+class _ExpandFittedCell extends FittedCell {
+  const _ExpandFittedCell({required Widget icon}) : super(content: icon);
 }
-

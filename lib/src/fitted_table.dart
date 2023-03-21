@@ -3,11 +3,13 @@ library fitted_table_lib;
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-import 'fitted_row.dart';
-import 'fitted_cell.dart';
 import 'fitted_table_theme.dart';
 
 part 'fitted_column.dart';
+
+part 'fitted_cell.dart';
+
+part 'fitted_row.dart';
 
 class FittedTable<T> extends StatelessWidget {
   FittedTable({
@@ -192,26 +194,27 @@ class _FittedTableWithRowBuilder<T> extends StatelessWidget {
           Flexible(
             fit: FlexFit.loose,
             child: CustomScrollView(
-            shrinkWrap: fittedTable.shrinkWrap,
-            slivers: [
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                    final row = rowBuilder(context, index);
-                    return _FittedTableRow<T>(
-                      constraints: constraints,
-                      evenColumnWidth: evenColumnWidth,
-                      value: row.value,
-                      index: index,
-                      fittedTableRow: row,
-                    );
-                  },
-                  addAutomaticKeepAlives: true,
-                  childCount: rowCount,
-                ),
-              )
-            ],
-          ),)
+              shrinkWrap: fittedTable.shrinkWrap,
+              slivers: [
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final row = rowBuilder(context, index);
+                      return _FittedTableRow<T>(
+                        constraints: constraints,
+                        evenColumnWidth: evenColumnWidth,
+                        value: row.value,
+                        index: index,
+                        fittedTableRow: row,
+                      );
+                    },
+                    addAutomaticKeepAlives: true,
+                    childCount: rowCount,
+                  ),
+                )
+              ],
+            ),
+          )
         ],
       );
     });

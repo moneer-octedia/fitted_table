@@ -68,12 +68,12 @@ class _FittedTableExampleState extends State<FittedTableExample> {
               rowCount: 100,
               rowBuilder: (context, index) {
                 return FittedTableRow(cells: [
-                  ExpandFittedCell(
+                  FittedCell.expand(
                     icon: ColoredBox(
                         color: Colors.blueGrey,
                         child: Icon(Icons.add_circle_outline)),
                   ),
-                  FittedTableCell(
+                  FittedCell(
                     content: ColoredBox(
                       color: Colors.blueGrey,
                       child: Padding(
@@ -82,7 +82,7 @@ class _FittedTableExampleState extends State<FittedTableExample> {
                       ),
                     ),
                   ),
-                  FittedTableCell(
+                  FittedCell(
                     content: ColoredBox(
                       color: Colors.blueGrey,
                       child: Padding(
@@ -91,7 +91,7 @@ class _FittedTableExampleState extends State<FittedTableExample> {
                       ),
                     ),
                   ),
-                  FittedTableCell(
+                  FittedCell(
                     content: ColoredBox(
                       color: Colors.blueGrey,
                       child: Padding(
