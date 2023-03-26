@@ -19,20 +19,22 @@ class FittedTable<T> extends StatelessWidget {
     this.onTapRow,
     required List<FittedTableRow> rows,
     this.shrinkWrap = false,
+    this.space = 12,
   }) : child = _FittedTableWithRowList<T>(
           rows: rows,
         );
 
-  FittedTable.builder(
-      {super.key,
-      required this.visibleNumberOfColumns,
-      required this.columns,
-      this.onTapRow,
-      required FittedTableRow Function(BuildContext context, int index)
-          rowBuilder,
-      int? rowCount,
-      this.shrinkWrap = false})
-      : child = _FittedTableWithRowBuilder<T>(
+  FittedTable.builder({
+    super.key,
+    required this.visibleNumberOfColumns,
+    required this.columns,
+    this.onTapRow,
+    required FittedTableRow Function(BuildContext context, int index)
+        rowBuilder,
+    int? rowCount,
+    this.shrinkWrap = false,
+    this.space = 12,
+  }) : child = _FittedTableWithRowBuilder<T>(
           rowBuilder: rowBuilder,
           rowCount: rowCount,
         );
@@ -53,6 +55,7 @@ class FittedTable<T> extends StatelessWidget {
     WidgetBuilder? noItemsFoundIndicatorBuilder,
     WidgetBuilder? noMoreItemsIndicatorBuilder,
     this.shrinkWrap = false,
+    this.space = 12,
   }) : child = _PaginatedFittedTable<T>(
           future: future,
           rowBuilder: rowBuilder,
@@ -73,6 +76,7 @@ class FittedTable<T> extends StatelessWidget {
   final void Function(T value)? onTapRow;
   final Widget child;
   final bool shrinkWrap;
+  final double space;
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +88,7 @@ class FittedTable<T> extends StatelessWidget {
       BuildContext context, BoxConstraints constraints) {
     final fittedTableThemeData = FittedTableTheme.of(context);
     int evenColumnNumber = visibleNumberOfColumns;
-    double totalSpecifiedWidth = 0.0;
+    double totalSpecifiedWidth = (columns.length - 1) * space;
 
     double evenColumnWidth = constraints.maxWidth / evenColumnNumber;
 

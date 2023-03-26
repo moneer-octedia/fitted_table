@@ -54,9 +54,13 @@ class _FittedTableExampleState extends State<FittedTableExample> {
           )),
           child: FittedTable.builder(
               onTapRow: (user) {},
-              visibleNumberOfColumns: 3,
+              visibleNumberOfColumns: 4,
               columns: [
                 FittedColumn.expand(),
+                FittedColumn.tight(
+                  width: 110,
+                  title: Text('#'),
+                ),
                 FittedColumn.tight(
                   width: 110,
                   title: Text('#'),
@@ -83,7 +87,18 @@ class _FittedTableExampleState extends State<FittedTableExample> {
                       color: Colors.blueGrey,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text('$index'),
+                        child: Text(
+                            '$index$index$index$index$index$index$index$index$index$index$index$index$index'),
+                      ),
+                    ),
+                  ),
+                  FittedCell(
+                    content: ColoredBox(
+                      color: Colors.blueGrey,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                            '$index$index$index$index$index$index$index$index$index$index$index$index$index'),
                       ),
                     ),
                   ),
