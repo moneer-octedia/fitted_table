@@ -1,4 +1,4 @@
-## 0.0.1-beta3
+## 0.0.1-beta.3
 
 * Space between columns
 
