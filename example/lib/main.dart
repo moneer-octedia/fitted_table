@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fitted_table/fitted_table.dart';
 
+const loremIpsum =
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut id tellus ut enim lobortis aliquam. Quisque blandit a tortor quis molestie. Curabitur rutrum porta ligula, non porta massa mollis a. Phasellus porttitor, eros at rutrum ullamcorper, mauris purus ultricies mi, sed consectetur tellus libero rutrum felis. Aliquam vel leo iaculis orci dictum mattis. Integer tristique volutpat quam id semper. In tincidunt vel massa at aliquet. Quisque sit amet turpis et turpis interdum tempor. Duis eu turpis lectus. Integer hendrerit tempus sollicitudin. Phasellus lacinia urna in vehicula consectetur. Curabitur sit amet pulvinar ante. Vivamus laoreet nibh sit amet fermentum sodales. Praesent quis mauris imperdiet, placerat erat eget, convallis mauris. Sed nec lorem nisl. Curabitur viverra porta imperdiet. ';
+
 void main() {
   runApp(const MyApp());
 }
@@ -54,10 +57,12 @@ class _FittedTableExampleState extends State<FittedTableExample> {
               visibleNumberOfColumns: 3,
               columns: [
                 FittedColumn.expand(),
-                FittedColumn(
+                FittedColumn.tight(
+                  width: 110,
                   title: Text('#'),
                 ),
-                FittedColumn(
+                FittedColumn.flex(
+                  flex: 10,
                   title: Text('Motto'),
                 ),
                 FittedColumn.tight(
@@ -87,7 +92,7 @@ class _FittedTableExampleState extends State<FittedTableExample> {
                       color: Colors.blueGrey,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text('all same motto'),
+                        child: Text(loremIpsum),
                       ),
                     ),
                   ),

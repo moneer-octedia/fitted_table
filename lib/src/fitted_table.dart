@@ -85,6 +85,7 @@ class FittedTable<T> extends StatelessWidget {
     final fittedTableThemeData = FittedTableTheme.of(context);
     int evenColumnNumber = visibleNumberOfColumns;
     double totalSpecifiedWidth = 0.0;
+
     double evenColumnWidth = constraints.maxWidth / evenColumnNumber;
 
     for (var i = 0; i < visibleNumberOfColumns; i += 1) {
@@ -92,6 +93,7 @@ class FittedTable<T> extends StatelessWidget {
 
       if (column is FittedFlexedColumn) {
         evenColumnNumber += column.flex - 1;
+        evenColumnWidth = constraints.maxWidth / evenColumnNumber;
       } else if (column is FittedTightColumn) {
         evenColumnNumber -= 1;
         totalSpecifiedWidth += column.width;
@@ -362,11 +364,9 @@ class _FittedTableHeaderRow<T> extends StatelessWidget {
   final double evenColumnWidth;
 
   double resolveFinalColumnWidth(FittedColumn fittedColumn) {
-    //
-    // if (fittedColumn is FittedFlexedColumn) {
-    //
-    // } else
-    if (fittedColumn is FittedTightColumn) {
+    if (fittedColumn is FittedFlexedColumn) {
+      return evenColumnWidth * fittedColumn.flex;
+    } else if (fittedColumn is FittedTightColumn) {
       return fittedColumn.width;
     } else if (fittedColumn is FittedExpandColumn &&
         fittedColumn.width != null) {
@@ -446,10 +446,9 @@ class _FittedTableRowState<T> extends State<_FittedTableRow<T>>
 
   double resolveFinalColumnWidth(FittedColumn fittedColumn) {
     var evenColumnWidth = widget.evenColumnWidth;
-    //
-    // if (fittedColumn is FittedFlexedColumn) {
-    //
-    // } else
+    if (fittedColumn is FittedFlexedColumn) {
+      return evenColumnWidth * fittedColumn.flex;
+    }
     if (fittedColumn is FittedTightColumn) {
       return fittedColumn.width;
     } else if (fittedColumn is FittedExpandColumn &&
