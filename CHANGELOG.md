@@ -1,5 +1,7 @@
-## 0.0.1-beta.1
+## 0.0.1-beta3
 
-* Implements width determining idea. Supports for pagination, and expandable rows.
+* Space between columns
 
 * Flex and shrink wrap
+
+* Implements width determining idea. Supports for pagination, and expandable rows.

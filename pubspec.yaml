@@ -1,6 +1,6 @@
 name: fitted_table
 description: A customaizable table with intuitive behavior that allows for pagination, and has expandable rows.
-version: 0.0.1-beta.2
+version: 0.0.1-beta.3
 homepage: https://github.com/moneer-octedia/fitted_table
 
 environment:
