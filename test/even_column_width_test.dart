@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:fitted_table/fitted_table.dart';
 
+// TODO: need to not write formulas but hard numbers to avoid bias
 void main() {
   const numberOfColumns = 10;
   const double screenWidth = 1000.0;

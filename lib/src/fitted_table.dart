@@ -100,9 +100,11 @@ class FittedTable<T> extends StatelessWidget {
         evenColumnWidth = constraints.maxWidth / evenColumnNumber;
       } else if (column is FittedTightColumn) {
         evenColumnNumber -= 1;
+        evenColumnWidth = constraints.maxWidth / evenColumnNumber;
         totalSpecifiedWidth += column.width;
       } else if (column is FittedExpandColumn && column.width != null) {
         evenColumnNumber -= 1;
+        evenColumnWidth = constraints.maxWidth / evenColumnNumber;
         totalSpecifiedWidth += column.width!;
       }
     }
