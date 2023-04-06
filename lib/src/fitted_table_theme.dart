@@ -28,6 +28,9 @@ class FittedTableThemeData {
     this.rowPadding,
     this.headerRowPadding,
     this.headerTextStyle,
+    this.expandHeightPadding = 12,
+    this.expandWidthPadding = 12,
+    this.expandTitleStyle,
   });
 
   final MainAxisAlignment mainAxisAlignment;
@@ -38,4 +41,7 @@ class FittedTableThemeData {
   final EdgeInsetsGeometry? rowPadding;
   final EdgeInsetsGeometry? headerRowPadding;
   final bool expandableDataRows;
+  final double expandHeightPadding;
+  final double expandWidthPadding;
+  final TextStyle? expandTitleStyle;
 }

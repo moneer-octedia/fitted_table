@@ -551,6 +551,7 @@ class _FittedTableExpand<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fittedTable = FittedTable.of<T>(context);
+    final fittedTableThemeData = FittedTableTheme.of(context);
 
     List<Widget> cells = [];
     for (var i = fittedTable.visibleNumberOfColumns;
@@ -561,12 +562,23 @@ class _FittedTableExpand<T> extends StatelessWidget {
       cells.add(
         Row(
           children: [
-            title,
-            const SizedBox(width: 8),
-            content,
+            if (fittedTableThemeData.expandTitleStyle != null)
+              DefaultTextStyle(
+                  style: fittedTableThemeData.expandTitleStyle!, child: title)
+            else
+              title,
+            SizedBox(width: fittedTableThemeData.expandWidthPadding),
+            Expanded(child: content),
           ],
         ),
       );
+      if (i != fittedTable.columns.length - 1) {
+        cells.add(SizedBox(height: fittedTableThemeData.expandHeightPadding));
+      }
+    }
+    if (fittedTableRow.expandAction != null) {
+      cells.add(SizedBox(height: fittedTableThemeData.expandHeightPadding));
+      cells.add(fittedTableRow.expandAction!);
     }
 
     return Column(

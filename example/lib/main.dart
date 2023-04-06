@@ -15,6 +15,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return FittedTableTheme(
       fittedTableThemeData: FittedTableThemeData(
+        expandTitleStyle:
+            TextStyle(color: Colors.red),
         evenRowColor: Colors.brown.withOpacity(0.6),
         oddRowColor: Colors.grey.withOpacity(0.6),
         rowPadding: const EdgeInsets.all(24),
@@ -54,15 +56,13 @@ class _FittedTableExampleState extends State<FittedTableExample> {
           )),
           child: FittedTable.builder(
               onTapRow: (user) {},
-              visibleNumberOfColumns: 4,
+              visibleNumberOfColumns: 3,
               columns: [
                 FittedColumn.expand(),
-                FittedColumn.tight(
-                  width: 110,
+                FittedColumn(
                   title: Text('#'),
                 ),
-                FittedColumn.tight(
-                  width: 110,
+                FittedColumn(
                   title: Text('#'),
                 ),
                 FittedColumn.flex(
@@ -76,51 +76,61 @@ class _FittedTableExampleState extends State<FittedTableExample> {
               ],
               rowCount: 100,
               rowBuilder: (context, index) {
-                return FittedTableRow(cells: [
-                  FittedCell.expand(
-                    icon: ColoredBox(
-                        color: Colors.blueGrey,
-                        child: Icon(Icons.add_circle_outline)),
-                  ),
-                  FittedCell(
-                    content: ColoredBox(
-                      color: Colors.blueGrey,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                            '$index$index$index$index$index$index$index$index$index$index$index$index$index'),
+                return FittedTableRow(
+                    cells: [
+                      FittedCell.expand(
+                        icon: ColoredBox(
+                            color: Colors.blueGrey,
+                            child: Icon(Icons.add_circle_outline)),
                       ),
-                    ),
-                  ),
-                  FittedCell(
-                    content: ColoredBox(
-                      color: Colors.blueGrey,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                            '$index$index$index$index$index$index$index$index$index$index$index$index$index'),
+                      FittedCell(
+                        content: ColoredBox(
+                          color: Colors.blueGrey,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                                '$index$index$index$index$index$index$index$index$index$index$index$index$index'),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  FittedCell(
-                    content: ColoredBox(
-                      color: Colors.blueGrey,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(loremIpsum),
+                      FittedCell(
+                        content: ColoredBox(
+                          color: Colors.blueGrey,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                                '$index$index$index$index$index$index$index$index$index$index$index$index$index'),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  FittedCell(
-                    content: ColoredBox(
-                      color: Colors.blueGrey,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('same name'),
+                      FittedCell(
+                        content: ColoredBox(
+                          color: Colors.blueGrey,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(loremIpsum),
+                          ),
+                        ),
                       ),
-                    ),
-                  )
-                ]);
+                      FittedCell(
+                        content: ColoredBox(
+                          color: Colors.blueGrey,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('same name'),
+                          ),
+                        ),
+                      )
+                    ],
+                    expandAction: Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          OutlinedButton(onPressed: () {}, child: Text('Edit'))
+                        ],
+                      ),
+                    ));
               }),
         ),
         // child: FittedTable.paginated(
