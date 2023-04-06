@@ -1,4 +1,6 @@
 
+* 0.0.1-beta.5 More styling options and actions
+
 * 0.0.1-beta.4 Fixed bug
 
 * 0.0.1-beta.3 Space between columns
