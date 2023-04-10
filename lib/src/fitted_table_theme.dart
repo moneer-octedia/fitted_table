@@ -21,6 +21,7 @@ class FittedTableTheme extends InheritedWidget {
 class FittedTableThemeData {
   const FittedTableThemeData({
     this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
+    this.space = 12,
     this.expandableDataRows = false,
     this.evenRowColor,
     this.oddRowColor,
@@ -44,4 +45,5 @@ class FittedTableThemeData {
   final double expandHeightPadding;
   final double expandWidthPadding;
   final TextStyle? expandTitleStyle;
+  final double space;
 }

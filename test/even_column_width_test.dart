@@ -11,7 +11,6 @@ void main() {
     late BuildContext context;
 
     final fittedTable = FittedTable(
-        space: 0,
         visibleNumberOfColumns: numberOfColumns,
         columns: List.generate(numberOfColumns,
             (index) => const FittedColumn(title: Text('title'))),
@@ -46,7 +45,6 @@ void main() {
     late BuildContext context;
 
     final fittedTable = FittedTable(
-        space: 0,
         visibleNumberOfColumns: numberOfColumns,
         columns: List.generate(
             numberOfColumns,

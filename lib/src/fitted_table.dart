@@ -19,7 +19,6 @@ class FittedTable<T> extends StatelessWidget {
     this.onTapRow,
     required List<FittedTableRow> rows,
     this.shrinkWrap = false,
-    this.space = 12,
   }) : child = _FittedTableWithRowList<T>(
           rows: rows,
         );
@@ -33,7 +32,6 @@ class FittedTable<T> extends StatelessWidget {
         rowBuilder,
     int? rowCount,
     this.shrinkWrap = false,
-    this.space = 12,
   }) : child = _FittedTableWithRowBuilder<T>(
           rowBuilder: rowBuilder,
           rowCount: rowCount,
@@ -55,7 +53,6 @@ class FittedTable<T> extends StatelessWidget {
     WidgetBuilder? noItemsFoundIndicatorBuilder,
     WidgetBuilder? noMoreItemsIndicatorBuilder,
     this.shrinkWrap = false,
-    this.space = 12,
   }) : child = _PaginatedFittedTable<T>(
           future: future,
           rowBuilder: rowBuilder,
@@ -76,7 +73,6 @@ class FittedTable<T> extends StatelessWidget {
   final void Function(T value)? onTapRow;
   final Widget child;
   final bool shrinkWrap;
-  final double space;
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +82,10 @@ class FittedTable<T> extends StatelessWidget {
   @visibleForTesting
   double resolveEvenColumnWidth(
       BuildContext context, BoxConstraints constraints) {
+
     final fittedTableThemeData = FittedTableTheme.of(context);
     int evenColumnNumber = visibleNumberOfColumns;
-    double totalSpecifiedWidth = (columns.length - 1) * space;
+    double totalSpecifiedWidth = (columns.length - 1) * fittedTableThemeData.space;
 
     double evenColumnWidth = constraints.maxWidth / evenColumnNumber;
 
