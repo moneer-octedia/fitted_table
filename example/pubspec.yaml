@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  faker: ^2.1.0
   fitted_table:
     path: ../../fitted_table
 

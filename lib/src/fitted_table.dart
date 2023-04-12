@@ -82,10 +82,10 @@ class FittedTable<T> extends StatelessWidget {
   @visibleForTesting
   double resolveEvenColumnWidth(
       BuildContext context, BoxConstraints constraints) {
-
     final fittedTableThemeData = FittedTableTheme.of(context);
     int evenColumnNumber = visibleNumberOfColumns;
-    double totalSpecifiedWidth = (columns.length - 1) * fittedTableThemeData.space;
+    double totalSpecifiedWidth =
+        (columns.length - 1) * fittedTableThemeData.space;
 
     double evenColumnWidth = constraints.maxWidth / evenColumnNumber;
 
@@ -400,6 +400,7 @@ class _FittedTableHeaderRow<T> extends StatelessWidget {
 
     Widget row = Row(
         mainAxisAlignment: fittedTableThemeData.mainAxisAlignment,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: children);
 
     if (fittedTableThemeData.headerRowPadding != null) {
@@ -486,7 +487,7 @@ class _FittedTableRowState<T> extends State<_FittedTableRow<T>>
         SizedBox(
           width: resolveFinalColumnWidth(fittedColumn),
           child: Align(
-              alignment: fittedColumn.alignment,
+              alignment: AlignmentDirectional.topStart,
               child: fittedColumn is FittedExpandColumn
                   ? IconButton(
                       onPressed: () {
@@ -503,6 +504,7 @@ class _FittedTableRowState<T> extends State<_FittedTableRow<T>>
 
     Widget row = Row(
         mainAxisAlignment: fittedTableThemeData.mainAxisAlignment,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: children);
 
     if (isExpanded) {
@@ -521,6 +523,15 @@ class _FittedTableRowState<T> extends State<_FittedTableRow<T>>
 
     if (fittedTableThemeData.rowPadding != null) {
       row = Padding(padding: fittedTableThemeData.rowPadding!, child: row);
+    }
+
+    if (fittedTableThemeData.rowDivider != null) {
+      row = DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(top: fittedTableThemeData.rowDivider!),
+        ),
+        child: row,
+      );
     }
 
     final isEven = widget.index % 2 == 0;
