@@ -76,7 +76,16 @@ class FittedTable<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return child;
+    final fittedTableThemeData = FittedTableTheme.of(context);
+
+    return Material(
+        clipBehavior: Clip.hardEdge,
+        shape: fittedTableThemeData.aroundBorder == null
+            ? null
+            : RoundedRectangleBorder(
+                side: fittedTableThemeData.aroundBorder!,
+              ),
+        child: child);
   }
 
   @visibleForTesting
@@ -99,7 +108,7 @@ class FittedTable<T> extends StatelessWidget {
         evenColumnNumber -= 1;
         evenColumnWidth = constraints.maxWidth / evenColumnNumber;
         totalSpecifiedWidth += column.width;
-      } else if (column is FittedExpandColumn && column.width != null) {
+      } else if (column is FittedUtilityColumn && column.width != null) {
         evenColumnNumber -= 1;
         evenColumnWidth = constraints.maxWidth / evenColumnNumber;
         totalSpecifiedWidth += column.width!;
@@ -371,7 +380,7 @@ class _FittedTableHeaderRow<T> extends StatelessWidget {
       return evenColumnWidth * fittedColumn.flex;
     } else if (fittedColumn is FittedTightColumn) {
       return fittedColumn.width;
-    } else if (fittedColumn is FittedExpandColumn &&
+    } else if (fittedColumn is FittedUtilityColumn &&
         fittedColumn.width != null) {
       return fittedColumn.width!;
     }
@@ -386,22 +395,38 @@ class _FittedTableHeaderRow<T> extends StatelessWidget {
 
     List<Widget> children = [];
 
+    Widget? utility;
+
     for (var i = 0; i < fittedTable.visibleNumberOfColumns; i += 1) {
       final fittedColumn = fittedTable.columns[i];
-      // assert(column.width != null || evenColumnWidth != null);
-      children.add(
-        SizedBox(
-          width: resolveFinalColumnWidth(fittedColumn),
-          child: Align(
-              alignment: fittedColumn.alignment, child: fittedColumn.title),
-        ),
+      final child = SizedBox(
+        width: resolveFinalColumnWidth(fittedColumn),
+        child:
+            Align(alignment: fittedColumn.alignment, child: fittedColumn.title),
       );
+
+      if (fittedColumn is FittedUtilityColumn &&
+          fittedTableThemeData.utilityAtEnd) {
+        utility = child;
+      } else if (fittedColumn is! FittedUtilityColumn ||
+          !fittedTableThemeData.utilityAtEnd) {
+        children.add(child);
+      }
+    }
+
+    if (utility != null) {
+      children.add(utility);
     }
 
     Widget row = Row(
         mainAxisAlignment: fittedTableThemeData.mainAxisAlignment,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: children);
+
+    if (fittedTableThemeData.headerDefaultTextStyle != null) {
+      row = DefaultTextStyle(
+          style: fittedTableThemeData.headerDefaultTextStyle!, child: row);
+    }
 
     if (fittedTableThemeData.headerRowPadding != null) {
       row =
@@ -410,11 +435,6 @@ class _FittedTableHeaderRow<T> extends StatelessWidget {
 
     if (fittedTableThemeData.headerRowColor != null) {
       row = ColoredBox(color: fittedTableThemeData.headerRowColor!, child: row);
-    }
-
-    if (fittedTableThemeData.headerTextStyle != null) {
-      return DefaultTextStyle(
-          style: fittedTableThemeData.headerTextStyle!, child: row);
     }
 
     return row;
@@ -455,7 +475,7 @@ class _FittedTableRowState<T> extends State<_FittedTableRow<T>>
     }
     if (fittedColumn is FittedTightColumn) {
       return fittedColumn.width;
-    } else if (fittedColumn is FittedExpandColumn &&
+    } else if (fittedColumn is FittedUtilityColumn &&
         fittedColumn.width != null) {
       return fittedColumn.width!;
     }
@@ -472,8 +492,11 @@ class _FittedTableRowState<T> extends State<_FittedTableRow<T>>
 
     final List<Widget> children = [];
 
+    Widget? utility;
+
     for (var i = 0; i < fittedTable.visibleNumberOfColumns; i += 1) {
-      final fittedTableCell = widget.fittedTableRow.cells[i];
+      final fittedTableRow = widget.fittedTableRow;
+      final fittedTableCell = fittedTableRow.cells[i];
       final fittedColumn = fittedTable.columns[i];
       // assert(column.width != null || widget.evenColumnWidth != null);
       // final isExpandColumn = column is ExpandFittedColumn;
@@ -483,23 +506,66 @@ class _FittedTableRowState<T> extends State<_FittedTableRow<T>>
         // }
         return true;
       }());
-      children.add(
-        SizedBox(
+      if (fittedColumn is FittedUtilityColumn) {
+        utility = SizedBox(
           width: resolveFinalColumnWidth(fittedColumn),
           child: Align(
               alignment: AlignmentDirectional.topStart,
-              child: fittedColumn is FittedExpandColumn
-                  ? IconButton(
+              child: () {
+                Widget? expandIcon;
+                Widget? child1;
+                if (fittedColumn.expandIcon != null) {
+                  expandIcon = IconButton(
+                      splashRadius: 18,
                       onPressed: () {
                         setState(() {
                           isExpanded = !isExpanded;
                         });
                       },
                       padding: EdgeInsets.zero,
-                      icon: fittedTableCell.content)
-                  : fittedTableCell.content),
-        ),
-      );
+                      icon: fittedColumn.expandIcon!);
+                }
+
+                if (fittedColumn.builder1 != null) {
+                  child1 = fittedColumn.builder1!.call(fittedTableRow.value);
+                }
+
+                if (expandIcon != null && child1 != null) {
+                  return Row(
+                    children: fittedTableThemeData.expandIconFirst
+                        ? [expandIcon, child1]
+                        : [child1, expandIcon],
+                  );
+                }
+
+                if (expandIcon != null) {
+                  return expandIcon;
+                }
+
+                if (child1 != null) {
+                  return child1;
+                }
+              }()),
+        );
+      }
+
+      if (fittedColumn is FittedUtilityColumn &&
+          !fittedTableThemeData.utilityAtEnd) {
+        children.add(utility!);
+      } else if (fittedColumn is! FittedUtilityColumn) {
+        children.add(
+          SizedBox(
+            width: resolveFinalColumnWidth(fittedColumn),
+            child: Align(
+                alignment: AlignmentDirectional.topStart,
+                child: fittedTableCell.content),
+          ),
+        );
+      }
+    }
+
+    if (fittedTableThemeData.utilityAtEnd && utility != null) {
+      children.add(utility);
     }
 
     Widget row = Row(
@@ -569,10 +635,12 @@ class _FittedTableExpand<T> extends StatelessWidget {
       final content = fittedTableRow.cells[i].content;
       cells.add(
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (fittedTableThemeData.expandTitleStyle != null)
+            if (fittedTableThemeData.expandHeaderDefaultTextStyle != null)
               DefaultTextStyle(
-                  style: fittedTableThemeData.expandTitleStyle!, child: title)
+                  style: fittedTableThemeData.headerDefaultTextStyle!,
+                  child: title)
             else
               title,
             SizedBox(width: fittedTableThemeData.expandWidthPadding),
@@ -583,10 +651,6 @@ class _FittedTableExpand<T> extends StatelessWidget {
       if (i != fittedTable.columns.length - 1) {
         cells.add(SizedBox(height: fittedTableThemeData.expandHeightPadding));
       }
-    }
-    if (fittedTableRow.expandAction != null) {
-      cells.add(SizedBox(height: fittedTableThemeData.expandHeightPadding));
-      cells.add(fittedTableRow.expandAction!);
     }
 
     return Column(

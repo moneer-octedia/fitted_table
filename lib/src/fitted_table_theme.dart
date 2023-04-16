@@ -22,30 +22,34 @@ class FittedTableThemeData {
   const FittedTableThemeData({
     this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
     this.space = 8,
-    this.expandableDataRows = false,
     this.evenRowColor,
     this.oddRowColor,
     this.headerRowColor,
     this.rowPadding,
     this.headerRowPadding,
-    this.headerTextStyle,
-    this.expandHeightPadding = 12,
-    this.expandWidthPadding = 12,
-    this.expandTitleStyle,
+    this.expandHeightPadding = 8,
+    this.expandWidthPadding = 8,
     this.rowDivider,
+    this.utilityAtEnd = false,
+    this.expandIconFirst = false,
+    this.aroundBorder,
+    this.headerDefaultTextStyle,
+    this.expandHeaderDefaultTextStyle,
   });
 
   final MainAxisAlignment mainAxisAlignment;
   final Color? evenRowColor;
   final Color? oddRowColor;
   final Color? headerRowColor;
-  final TextStyle? headerTextStyle;
   final EdgeInsetsGeometry? rowPadding;
   final EdgeInsetsGeometry? headerRowPadding;
-  final bool expandableDataRows;
   final double expandHeightPadding;
   final double expandWidthPadding;
-  final TextStyle? expandTitleStyle;
   final double space;
   final BorderSide? rowDivider;
+  final BorderSide? aroundBorder;
+  final bool utilityAtEnd;
+  final bool expandIconFirst;
+  final TextStyle? headerDefaultTextStyle;
+  final TextStyle? expandHeaderDefaultTextStyle;
 }
